@@ -7,7 +7,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -18,8 +20,14 @@ public class CustomerController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
-    public void setOne(@RequestBody Customer customer) {
-        customerService.setOne(customer);
+    public void create(@PathVariable Customer customer) {
+        customerService.create(customer);
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/{id}/avatar")
+    public void setAvatar(@PathVariable int id, @RequestBody MultipartFile file) throws IOException {
+        customerService.setAvatar(id, file);
     }
 
     @GetMapping("")

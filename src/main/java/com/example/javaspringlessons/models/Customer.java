@@ -21,8 +21,14 @@ public class Customer {
     @Email
     private String email;
     private boolean isActivated = false;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private ActivationToken activationToken;
+    private String avatar;
 
+    public Customer(String name, String surname, String email) {
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+    }
 }

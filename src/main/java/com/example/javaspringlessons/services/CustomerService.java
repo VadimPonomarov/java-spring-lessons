@@ -7,10 +7,14 @@ import com.example.javaspringlessons.models.dto.CustomerDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Data
@@ -19,16 +23,25 @@ public class CustomerService {
     private CustomerDAO customerDao;
     private MailService mailService;
 
-    public void setOne(Customer customer) {
+    public void create(Customer customer) {
         customer.setActivationToken(new ActivationToken());
         System.out.println(customer);
         customerDao.save(customer);
         mailService.send(customer);
     }
 
+    public void setAvatar(int id, MultipartFile file) throws IOException {
+        String path = System.getProperty("user.dir") + File.separator + "images" + File.separator + file.getOriginalFilename();
+        File newFile = new File(path);
+        file.transferTo(newFile);
+        Customer customer = customerDao.findById(id).get();
+        customer.setAvatar("/img/" + file.getOriginalFilename());
+        customerDao.save(customer);
+    }
+
     public void activate(String token) {
         Customer candidate = customerDao.getOneByToken(token);
-        if(isExpired(candidate.getActivationToken().getExpire())){
+        if (isExpired(candidate.getActivationToken().getExpire())) {
             throw new RuntimeException("Token is expired !!!");
         }
         candidate.setActivated(true);

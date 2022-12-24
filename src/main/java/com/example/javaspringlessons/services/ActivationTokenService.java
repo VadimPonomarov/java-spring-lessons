@@ -15,7 +15,7 @@ import java.util.List;
 public class ActivationTokenService {
     private ActivationTokenDAO activationTokenDAO;
 
-    @Scheduled(fixedDelay = 2000)
+    @Scheduled(fixedDelay = 1000*60*60)
     public void deleteTokenIfExpired() {
         System.out.println("work");
         List<ActivationToken> tokenList = activationTokenDAO.findAll();
