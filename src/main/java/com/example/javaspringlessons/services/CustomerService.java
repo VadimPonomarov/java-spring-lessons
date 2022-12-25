@@ -25,7 +25,6 @@ public class CustomerService {
 
     public void create(Customer customer) {
         customer.setActivationToken(new ActivationToken());
-        System.out.println(customer);
         customerDao.save(customer);
         mailService.send(customer);
     }

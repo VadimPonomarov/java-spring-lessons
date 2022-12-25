@@ -20,7 +20,7 @@ public class CustomerController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
-    public void create(@PathVariable Customer customer) {
+    public void create(@RequestBody Customer customer) {
         customerService.create(customer);
     }
 
