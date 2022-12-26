@@ -6,6 +6,7 @@ import com.example.javaspringlessons.models.Customer;
 import com.example.javaspringlessons.models.dto.CustomerDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,7 +15,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Data
@@ -22,29 +22,55 @@ import java.util.Optional;
 public class CustomerService {
     private CustomerDAO customerDao;
     private MailService mailService;
+    private PasswordEncoder passwordEncoder;
 
     public void create(Customer customer) {
-        customer.setActivationToken(new ActivationToken());
-        customerDao.save(customer);
-        mailService.send(customer);
+        customer
+                .setActivationToken(
+                        new ActivationToken()
+                );
+        customer.setPassword(
+                passwordEncoder
+                        .encode(
+                                customer.getPassword()
+                        )
+        );
+        customerDao
+                .save(customer);
+        mailService
+                .send(customer);
     }
 
     public void setAvatar(int id, MultipartFile file) throws IOException {
-        String path = System.getProperty("user.dir") + File.separator + "images" + File.separator + file.getOriginalFilename();
-        File newFile = new File(path);
+        File newFile = new File(
+                System.getProperty("user.dir") +
+                        File.separator +
+                        "images" +
+                        File.separator +
+                        file.getOriginalFilename()
+        );
         file.transferTo(newFile);
-        Customer customer = customerDao.findById(id).get();
-        customer.setAvatar("/img/" + file.getOriginalFilename());
-        customerDao.save(customer);
+        Customer customer = customerDao
+                .findById(id)
+                .get();
+        customer
+                .setAvatar("/img/" + file.getOriginalFilename());
+        customerDao
+                .save(customer);
     }
 
     public void activate(String token) {
-        Customer candidate = customerDao.getOneByToken(token);
-        if (isExpired(candidate.getActivationToken().getExpire())) {
+        Customer candidate = customerDao
+                .getOneByToken(token);
+        if (isExpired(candidate
+                .getActivationToken()
+                .getExpire())) {
             throw new RuntimeException("Token is expired !!!");
         }
-        candidate.setActivated(true);
-        customerDao.save(candidate);
+        candidate
+                .setActivated(true);
+        customerDao
+                .save(candidate);
     }
 
     public List<Customer> getAll() {
@@ -59,20 +85,27 @@ public class CustomerService {
     }
 
     public List<Customer> getAllBySurname(String surname) {
-        return customerDao.getAllBySurname(surname);
+
+        return customerDao
+                .getAllBySurname(surname);
     }
 
     public Customer getOneById(int id) {
-        return customerDao.findById(id).get();
+
+        return customerDao
+                .findById(id).get();
     }
 
-
     public void activateCustomer(Customer candidate) {
-        customerDao.save(candidate);
+
+        customerDao
+                .save(candidate);
     }
 
     public List<Customer> updateOneById(int id, CustomerDto data) {
-        Customer candidate = customerDao.findById(id).get();
+        Customer candidate = customerDao
+                .findById(id)
+                .get();
         switch (data.getField()) {
             case "name":
                 candidate.setName(data.getValue());
@@ -86,25 +119,44 @@ public class CustomerService {
                         "    private String value;\n" +
                         "}. Example: {\"field\": \"name\", \"value\": \"newName\"}");
         }
-        customerDao.save(candidate);
-        return customerDao.findAll();
+        customerDao
+                .save(candidate);
+        return customerDao
+                .findAll();
     }
 
     public List<Customer> replaceOneById(int id, Customer customer) {
-        Customer candidate = customerDao.findById(id).get();
-        candidate.setName(customer.getName());
-        candidate.setSurname(customer.getSurname());
-        customerDao.save(candidate);
-        return customerDao.findAll();
+        Customer candidate = customerDao
+                .findById(id)
+                .get();
+        candidate
+                .setName(
+                        customer
+                                .getName()
+                );
+        candidate
+                .setSurname(
+                        customer
+                                .getSurname()
+                );
+        customerDao
+                .save(candidate);
+        return customerDao
+                .findAll();
     }
 
     public List<Customer> deleteOneById(int id) {
-        customerDao.deleteById(id);
-        return customerDao.findAll();
+        customerDao
+                .deleteById(id);
+        return customerDao
+                .findAll();
     }
 
     public boolean isExpired(LocalDateTime expireDate) {
-        return LocalDateTime.now(ZoneId.of("Europe/Kiev")).isAfter(expireDate);
+        return LocalDateTime.now(
+                        ZoneId.of("Europe/Kiev")
+                )
+                .isAfter(expireDate);
     }
 
 }

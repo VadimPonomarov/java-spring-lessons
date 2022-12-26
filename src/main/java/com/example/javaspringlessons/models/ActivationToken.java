@@ -1,8 +1,11 @@
 package com.example.javaspringlessons.models;
 
-import jakarta.persistence.*;
 import lombok.*;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.UUID;
@@ -10,6 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 @Entity
 public class ActivationToken {
     @Id
